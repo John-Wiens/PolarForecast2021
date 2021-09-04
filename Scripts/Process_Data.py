@@ -36,7 +36,6 @@ def calc_schedule_strengths(event_key, match_data, teams, team_powers, num_match
     teams = np.array(teams)
     for i in range(0, num_matches):
         key_str = event_key+"_qm" + str(i+1)
-        #print(key_str)
         match = match_data.get_item(Key={'key': key_str})
         match = match["Item"]
         
@@ -74,7 +73,7 @@ def build_score_matrix(event_key, teams, matches):
             
             for j in range(0,3):
                 blue_index = np.searchsorted(teams, float(match["blue"+str(j)]))
-                red_index = np.searchsorted(teams,float(match["red"+str(j)]))
+                red_index = np.searchsorted(teams, float(match["red"+str(j)]))
                 team_array[i][blue_index] = 1
                 team_array[num_matches+i][red_index] = 1
                 
@@ -97,6 +96,8 @@ def build_score_matrix(event_key, teams, matches):
             i+=1        
     for i in range(0,len(endgame_array)):
         endgame_array[i][0] = safe_div(endgame_array[i][0],endgame_array[i][1])
+
+    print(team_array, score_array, endgame_array)
     return team_array, score_array, endgame_array
     
 def solve_matrix(matrix, solution):

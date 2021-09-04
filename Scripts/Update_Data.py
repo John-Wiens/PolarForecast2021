@@ -1,11 +1,11 @@
 import TBA
 import DB_Access as db
-
-
 import re
+import numpy as np
 
 from Types.Match import build_match
 from Types.Team import build_team
+from Types.Ranking import Rank, Rankings
 from Process_Data import build_score_matrix, solve_matrix
 from datetime import datetime
 
@@ -68,10 +68,122 @@ def update_teams(event_code, force_update = False):
 
 def update_calculations(event_code, matches, teams, force_update = False):
     rankings, is_updated = TBA.get("/event/"+event_code+"/rankings")
-    team_array, score_array, endgame_array = build_score_matrix(event_code, teams, matches)
-    pass
+    team_list = [float(team['key']) for team in teams]
+    team_array, score_array, endgame_array = build_score_matrix(event_code, team_list, matches)
+    if np.count_nonzero(score_array)==0:
+        db.log_msg(f"Data Array is Empty for {event_code}. Exiting")
+        return
+    
+    #team_powers = IRLS(score_array, team_array,1)
+    team_powers = solve_matrix(team_array,score_array)
+    #team_powers = np.matmul(np.linalg.pinv(team_array),score_array)
+    team_powers[np.isnan(team_powers)] = 0
+    team_powers = np.around(team_powers,decimals = 2)
+
+    index = 0
+    opr_matrix = team_powers[:,0] + team_powers[:,1] + endgame_array[:,0] + team_powers[:,3]
+    max_opr = np.max(opr_matrix)
+    for team in teams:
+        opr = opr_matrix[index]
+        pr = 100 * (opr/max_opr)
+        bpm = team_powers[index][4] + team_powers[index][5] + team_powers[index][6]
+        try:
+            team['power']= pr
+            team['opr']= opr
+            team['auto_pr']= team_powers[index][0]
+            team['control_pr']= team_powers[index][1]
+            team['endgame_pr']= endgame_array[index][0]
+            team['cell_pr']= team_powers[index][3]
+            team['cell_count']= bpm
+            team['extra_rp']= team_powers[index][8]
+            team['fouls'] = team_powers[index][7]
+            
+            db.update_one('teams', team)
+            index +=1
+        except Exception as e:
+            db.log_msg("Issue Updating Team Power Rankings", team, str(e))
+    
+    # Update Rankings Table
+    try:
+        table = []
+        teams = np.array(team_list)
+        
+        for ranking in rankings["rankings"]:
+
+            team = float((ranking["team_key"])[3:])
+            index = np.searchsorted(teams, team)
+            opr = opr_matrix[index]
+            
+            pr = 100 * (opr/max_opr)
+            bpm = team_powers[index][4] + team_powers[index][5] + team_powers[index][6]
+            rank = float(ranking["rank"])
+            row = {"team": team, "rank": rank, "opr": opr, "auto":team_powers[index][0], "control":team_powers[index][1], "endgame":endgame_array[index][0], "cells": team_powers[index][3], "bpm":bpm, "fouls":team_powers[index][8], "power":pr}
+            table.append(Rank(**row))
+        rankings = Rankings(**{'key': event_code, 'rankings':table})
+        db.update_one('rankings', rankings.dict())                          
+            
+    except Exception as e:
+        db.log_msg("Issue Updating Event Update Time", event_code, str(e))
+        raise
+
+def update_match_predictions(event, matches, teams):
+    for match in matches:
+        if match['results'] == 'Predicted':
+
+            predicted_blue_cells = 0
+            predicted_red_cells = 0
+            
+            predicted_blue_endgame = 0
+            predicted_red_endgame = 0
+            
+            match["blue_extra_rp"] = 0
+            match["red_extra_rp"] = 0
+            for i in range(0,3):
+                
+                blue_team = db.find_one('teams', match['blue'+str(i)])
+                red_team = db.find_one('teams', match['red'+str(i)])
+
+                match["blue_score"] += blue_team["opr"]
+                match["blue_auto_score"] += blue_team["auto_pr"]
+                match["blue_control_score"] += blue_team["control_pr"]
+                match["blue_endgame_score"] += blue_team["endgame_pr"]
+                match["blue_cell_score"] += blue_team["cell_pr"]
+                match["blue_auto_score"] += blue_team["auto_pr"]
+
+                match["red_score"] += red_team["opr"]
+                match["red_auto_score"] += red_team["auto_pr"]
+                match["red_control_score"] += red_team["control_pr"]
+                match["red_endgame_score"] += red_team["endgame_pr"]
+                match["red_cell_score"] += red_team["cell_pr"]
+                match["red_auto_score"] += red_team["auto_pr"]
 
 
+
+                predicted_blue_cells += blue_team["cell_count"]
+                predicted_blue_endgame += blue_team["endgame_pr"]
+
+                predicted_red_cells += red_team["cell_count"]
+                predicted_red_endgame += red_team["endgame_pr"]
+                
+            if predicted_blue_endgame >= 50:
+                match["blue_rp"] +=1
+            if predicted_red_endgame >= 50:
+                match["red_rp"] +=1
+            if predicted_blue_cells >= 49:
+                match["blue_rp"] +=1
+            if predicted_red_cells > 49:
+                match["red_rp"] +=1
+            if match["blue_score"] > match["red_score"]:
+                match["blue_rp"] +=2
+            elif match["red_score"] > match["blue_score"]:
+                match["red_rp"] +=1
+            else:
+                match["blue_rp"] +=1
+                match["red_rp"] +=1
+            
+            match["predicted_blue_score"] =  match["blue_score"]
+            match["predicted_red_score"] =  match["red_score"]
+            db.update_one('matches', match)
 
 if __name__ == '__main__':
     if(TBA.check_connection()):
@@ -80,5 +192,6 @@ if __name__ == '__main__':
             matches = update_matches(event)
             teams = update_teams(event)
             update_calculations(event, matches, teams)
+            update_match_predictions(event, matches, teams)
 
         

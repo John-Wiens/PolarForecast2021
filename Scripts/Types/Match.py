@@ -21,37 +21,35 @@ class Match(BaseModel):
     blue2: int
     red2: int
 
-    blue_score: float
-    blue_score: float
-    blue_auto_score: float 
-    blue_control_score: float 
-    blue_endgame_score: float 
-    blue_cell_score: float 
-    blue_inner_goals: float 
-    blue_high_goals: float 
-    blue_low_goals: float 
-    blue_endgame_robot1: str 
-    blue_endgame_robot2: str 
-    blue_endgame_robot3: str 
-    blue_fouls: float
-    blue_rp: float
-    blue_extra_rp: float 
+    blue_score: float = 0
+    blue_auto_score: float = 0 
+    blue_control_score: float = 0
+    blue_endgame_score: float  = 0
+    blue_cell_score: float = 0 
+    blue_inner_goals: float = 0
+    blue_high_goals: float = 0 
+    blue_low_goals: float = 0 
+    blue_endgame_robot1: str = 0 
+    blue_endgame_robot2: str = 0 
+    blue_endgame_robot3: str = 0 
+    blue_fouls: float = 0
+    blue_rp: float = 0
+    blue_extra_rp: float = 0 
 
-    red_score: float
-    red_score: float
-    red_auto_score: float 
-    red_control_score: float 
-    red_endgame_score: float 
-    red_cell_score: float 
-    red_inner_goals: float 
-    red_high_goals: float 
-    red_low_goals: float 
-    red_endgame_robot1: str 
-    red_endgame_robot2: str 
-    red_endgame_robot3: str 
-    red_fouls: float
-    red_rp: float
-    red_extra_rp: float
+    red_score: float = 0
+    red_auto_score: float = 0 
+    red_control_score: float = 0 
+    red_endgame_score: float = 0 
+    red_cell_score: float = 0 
+    red_inner_goals: float = 0 
+    red_high_goals: float = 0 
+    red_low_goals: float = 0 
+    red_endgame_robot1: str = 0 
+    red_endgame_robot2: str = 0 
+    red_endgame_robot3: str = 0 
+    red_fouls: float = 0
+    red_rp: float = 0
+    red_extra_rp: float = 0
 
 def build_match(match):
     for i in range(0,3):
@@ -101,16 +99,16 @@ def build_match(match):
         else:
             match["blue_extra_rp"] = max(match["blue_rp"] - 1,0)
             match["red_extra_rp"] = max(match["blue_rp"] - 1,0)
-    
+    else:
+        match["results"] = "Predicted"
         
-        del match["alliances"]
-        del match["videos"]
-        del match["score_breakdown"]
-        del match["winning_alliance"]
+    del match["alliances"]
+    del match["videos"]
+    del match["score_breakdown"]
+    del match["winning_alliance"]
 
-        db_match = Match(**match)
-        return db_match
-    return None
+    db_match = Match(**match)
+    return db_match
 
 
 

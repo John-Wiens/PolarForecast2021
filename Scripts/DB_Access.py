@@ -24,3 +24,8 @@ def update_one(col, item):
     db = client['pf-database']
     col = db[col]
     col.replace_one({'key': item['key']}, item, upsert=True)
+
+def find_one(col, filter):
+    db = client['pf-database']
+    col = db[col]
+    return col.find_one({'key':str(filter)})
