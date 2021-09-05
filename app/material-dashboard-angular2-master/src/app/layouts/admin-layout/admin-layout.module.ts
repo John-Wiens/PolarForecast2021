@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AdminLayoutRoutes } from './admin-layout.routing';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { RankingsComponent } from '../../rankings/rankings.component';
+import { MatchesComponent } from '../../matches/matches.component';
 import { TableListComponent } from '../../table-list/table-list.component';
 import { IconsComponent } from '../../icons/icons.component';
 import { NotificationsComponent } from '../../notifications/notifications.component';
@@ -41,6 +42,7 @@ import { MatSortModule } from '@angular/material/sort';
     IconsComponent,
     NotificationsComponent,
     RankingsComponent,
+    MatchesComponent,
   ]
 })
 

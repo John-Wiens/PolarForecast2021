@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders  } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -10,5 +10,15 @@ export class ApiService {
 
   getRankings(event_key) {
     return this.http.get(this.API_URL + '/events/'+ event_key+'/rankings');
+  }
+  getMatches(event_key:string, comp_level: string = null) {
+
+    let endpoint = this.API_URL + '/events/'+ event_key+'/matches'
+
+    if (comp_level != null){
+      endpoint += '?comp_level='+ comp_level;
+    }
+
+    return this.http.get(endpoint);
   }
 }

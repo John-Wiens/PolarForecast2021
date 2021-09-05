@@ -44,7 +44,6 @@ def read_item(event_key: str):
     response = db.find_one('rankings', event_key)
     if response is not None:
         del response['_id']
-        print(response)
         return response
     else:
         return 404
@@ -55,6 +54,21 @@ def read_item(event_key: str, match_key: str):
     if response is not None:
         del response['_id']
         return response
+    else:
+        return 404
+
+@app.get("/events/{event_key}/matches")
+def read_item(event_key: str, comp_level: str = None):
+    filters = {'event_key':event_key}
+    if comp_level:
+        filters['comp_level'] = comp_level
+    response = db.find('matches', filters)
+    if response is not None:
+        data = []
+        for entry in response:
+            del entry['_id']
+            data.append(entry)
+        return {'data': data}
     else:
         return 404
 
