@@ -1,0 +1,11 @@
+table {
+    width: 100%;
+    overflow-x: scroll;
+  }
+th {
+  min-width: 96px;
+}
+td {
+  min-width: 96px;
+}
+

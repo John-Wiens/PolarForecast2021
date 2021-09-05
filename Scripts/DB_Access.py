@@ -29,3 +29,8 @@ def find_one(col, filter):
     db = client['pf-database']
     col = db[col]
     return col.find_one({'key':str(filter)})
+
+def find(col, filter):
+    db = client['pf-database']
+    col = db[col]
+    return col.find(filter)
