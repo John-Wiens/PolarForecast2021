@@ -29,10 +29,31 @@ app.add_middleware(
 def read_root():
     return {"Hello": "World"}
 
+@app.get("/events")
+def read_item():
+    filters = {'event_type':99}
+    response = db.find('events', filters)
+    if response is not None:
+        data = []
+        for entry in response:
+            del entry['_id']
+            data.append(entry)
+        return {'data': data}
+    else:
+        return 404
 
 @app.get("/teams/{team}")
 def read_item(team: str):
     response = db.find_one('teams', team)
+    if response is not None:
+        del response['_id']
+        return response
+    else:
+        return 404
+
+@app.get("/events/{event_key}")
+def read_item(event_key: str):
+    response = db.find_one('events', event_key)
     if response is not None:
         del response['_id']
         return response

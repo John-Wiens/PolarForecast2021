@@ -26,7 +26,8 @@ def update_events(force_update = False):
             
             if today >= start and today <= end or event['event_code'] == 'isjo' or force_update:
                 event_list.append(event['key'])
-                #db.insert_one(event)
+            
+            db.update_one('events', event)
 
         except Exception as e:
             message = f"Error in Query_TBA.py. Unable to Query {event['event_code']}"
@@ -83,6 +84,7 @@ def update_calculations(event_code, matches, teams, force_update = False):
     index = 0
     opr_matrix = team_powers[:,0] + team_powers[:,1] + endgame_array[:,0] + team_powers[:,3]
     max_opr = np.max(opr_matrix)
+    team_list = []
     for team in teams:
         opr = opr_matrix[index]
         pr = 100 * (opr/max_opr)
@@ -98,10 +100,14 @@ def update_calculations(event_code, matches, teams, force_update = False):
             team['extra_rp']= team_powers[index][8]
             team['fouls'] = team_powers[index][7]
             
-            db.update_one('teams', team)
+            updated_team = db.update_one('teams', team)
             index +=1
         except Exception as e:
-            db.log_msg("Issue Updating Team Power Rankings", team, str(e))
+            db.log_msg("Issue Updating Team Power Rankings"+ team+ str(e))
+        
+        event = db.find_one('events',event_code)
+        event['teams'] = teams
+        db.update_one('events', event)
     
     # Update Rankings Table
     try:
@@ -125,6 +131,8 @@ def update_calculations(event_code, matches, teams, force_update = False):
     except Exception as e:
         db.log_msg("Issue Updating Event Update Time", event_code, str(e))
         raise
+
+    
 
 def update_match_predictions(event, matches, teams):
     for match in matches:
@@ -187,7 +195,7 @@ def update_match_predictions(event, matches, teams):
 
 if __name__ == '__main__':
     if(TBA.check_connection()):
-        events = update_events()
+        events = update_events(force_update = False)
         for event in events:
             matches = update_matches(event)
             teams = update_teams(event)

@@ -17,13 +17,13 @@ def log_msg(msg, type = 'INFO',):
 def insert_one(col, item):
     db = client['pf-database']
     col = db[col]
-    col.insert_one(item)
+    return col.insert_one(item)
 
 
 def update_one(col, item):
     db = client['pf-database']
     col = db[col]
-    col.replace_one({'key': item['key']}, item, upsert=True)
+    return col.replace_one({'key': item['key']}, item, upsert=True)
 
 def find_one(col, filter):
     db = client['pf-database']

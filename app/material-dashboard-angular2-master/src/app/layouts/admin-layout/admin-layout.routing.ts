@@ -3,9 +3,9 @@ import { Routes } from '@angular/router';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { TableListComponent } from '../../table-list/table-list.component';
 import { IconsComponent } from '../../icons/icons.component';
-import { NotificationsComponent } from '../../notifications/notifications.component';
 import { RankingsComponent } from '../../rankings/rankings.component';
 import { MatchesComponent } from '../../matches/matches.component';
+import { TeamsComponent } from 'app/teams/teams.component';
 
 export const AdminLayoutRoutes: Routes = [
     // {
@@ -53,7 +53,7 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
     { path: 'table-list',     component: TableListComponent },
     { path: 'icons',          component: IconsComponent },
-    { path: 'notifications',  component: NotificationsComponent },
     { path: 'rankings',        component: RankingsComponent },
     { path: 'matches',        component: MatchesComponent },
+    { path: 'teams',        component: TeamsComponent },
 ];

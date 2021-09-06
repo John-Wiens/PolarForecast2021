@@ -1,0 +1,38 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-6 col-md-12" *ngFor="let element of data">
+            <div class="card card-chart">
+                <div class="card-header card-header-primary">
+                  <h1>{{element["key"]}} - {{element["name"]}}</h1>
+                </div>
+                <div class="card-body">
+                    <h4 class="card-title"></h4>
+                    <p class="card-category">
+                      <img src="/assets/img/RobotHead.jfif" class="float-left"/>
+                    </p>
+                      <div>
+                        Power: {{element["power"]}}<br>
+                        OPR: {{element["opr"]}}<br>
+                        Auto: {{element["auto_pr"]}}<br>
+                        Color Wheel: {{element["control_pr"]}}<br>
+                        Endgame: {{element["endgame_pr"]}}<br>
+                        Cells: {{element["cell_pr"]}}<br>
+                        Cell Count: {{element["cell_count"]}}<br>
+                        Extra RP: {{element["extra_rp"]}}<br>
+                        Fouls: {{element["fouls"]}}<br>
+                        City: {{element["city"]}}<br>
+                        Country: {{element["country"]}}<br>
+                        Website: {{element["website"]}}<br>
+                      </div>  
+                      
+                </div>
+                <div class="card-footer">
+                    <div class="stats">
+                        <!--<i class="material-icons">access_time</i> updated 4 minutes ago!-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

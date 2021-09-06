@@ -1,5 +1,4 @@
 @use "sass:math";
-
 $bmd-label-color-focus: $brand-primary !default;
 $bmd-invalid-underline: $brand-danger !default;
 $bmd-readonly-underline: $input-border-color !default;
@@ -73,7 +72,7 @@ $pale-bg:                    #F9F7F3 !default;
 $font-color:                 #66615b !default;
 
 // $brand-default:     #cecece !default;
-// $brand-primary:     $purple !default;
+// $brand-primary:     $blue-500 !default;
 // $brand-success:     $green !default;
 // $brand-danger:      $red !default;
 // $brand-warning:     $orange !default;

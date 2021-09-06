@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { CdkTableModule } from "@angular/cdk/table";
 import { MatSortModule, MatSort} from '@angular/material/sort';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
 
 @NgModule({
   imports: [
@@ -23,6 +24,7 @@ import { MatSortModule, MatSort} from '@angular/material/sort';
     MatTableModule,
     CdkTableModule,
     MatSortModule,
+    MatAutocompleteModule,
     //MatSort
   ],
   declarations: [
