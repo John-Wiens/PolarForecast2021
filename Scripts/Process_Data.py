@@ -1,8 +1,4 @@
-import json
 import numpy as np
-import decimal
-import datetime
-import TBA
 from scipy.optimize import nnls
 
 
@@ -17,7 +13,7 @@ def IRLS(y, A, p):
     while iterations < 10:
         e = y - np.matmul(A,  x)
         e_len = e.shape[0]
-        w = np.power(e,(p-2)/2);
+        w = np.power(e,(p-2)/2)
         W = np.matmul(w,np.linalg.pinv(np.array([sum(w)])))
         W = np.diag(W[:,0])
         

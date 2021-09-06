@@ -1,17 +1,19 @@
-import TBA
-import DB_Access as db
+
 import re
 import numpy as np
-
-from Types.Match import build_match
-from Types.Team import build_team
-from Types.Ranking import Rank, Rankings
+import azure.functions as func
+from Match import build_match
+from Team import build_team
+from Ranking import Rank, Rankings
+import TBA
+import DB_Access as db
 from Process_Data import build_score_matrix, solve_matrix
 from datetime import datetime
 
 
 
-def get_as_date(date):
+
+def get_as_date(date)   :
     return datetime.strptime(date, '%Y-%m-%d')
 
 
@@ -193,7 +195,8 @@ def update_match_predictions(event, matches, teams):
             match["predicted_red_score"] =  match["red_score"]
             db.update_one('matches', match)
 
-if __name__ == '__main__':
+
+def update_data():
     if(TBA.check_connection()):
         events = update_events(force_update = False)
         for event in events:
@@ -201,5 +204,12 @@ if __name__ == '__main__':
             teams = update_teams(event)
             update_calculations(event, matches, teams)
             update_match_predictions(event, matches, teams)
+
+def main(mytimer: func.TimerRequest) -> None:
+    update_data()
+
+
+if __name__ == '__main__':
+    update_data()
 
         

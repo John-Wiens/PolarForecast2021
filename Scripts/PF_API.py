@@ -1,12 +1,11 @@
+
+import DB_Access as db
+import azure.functions as func
 from typing import Optional
 from fastapi import FastAPI
-import pymongo
-from datetime import datetime
-import DB_Access as db
+from http_asgi import AsgiMiddleware
 from fastapi.middleware.cors import CORSMiddleware
-
-uri = "mongodb://root:example@0.0.0.0:27017/"
-client = pymongo.MongoClient(uri)
+from datetime import datetime
 
 
 app = FastAPI()
@@ -93,5 +92,5 @@ def read_item(event_key: str, comp_level: str = None):
     else:
         return 404
 
-
-
+def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
+    return AsgiMiddleware(app).handle(req, context)
