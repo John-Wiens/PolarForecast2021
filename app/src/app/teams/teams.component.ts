@@ -50,14 +50,15 @@ export class TeamsComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   getTeams() {
-    
-    this.api.getEvent('2021isjo')
+    const event = localStorage.getItem('event');
+    if(event!=null){
+      this.api.getEvent(event)
       .subscribe(data => {
         if ('teams' in data){
           this.data = data['teams'];
         }
         console.log(this.data);
       });
-      
+    }
   }
 }

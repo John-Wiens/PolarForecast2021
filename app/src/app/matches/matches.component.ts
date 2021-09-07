@@ -33,12 +33,15 @@ export class MatchesComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   getMatches() {
-    this.api.getMatches('2021isjo','qm')
+    const event = localStorage.getItem('event');
+    if(event!= null){
+      this.api.getMatches(event,'qm')
       .subscribe(data => {
         if ('data' in data){
           this.data = data['data'];
           console.log(this.data);
         }
       });
+    }
   }
 }

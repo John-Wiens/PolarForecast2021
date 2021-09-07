@@ -7,24 +7,25 @@
                   <h1>Welcome to Polar Forecast!</h1>
                 </div>
                 <div class="card-body">
-                    <h4 class="card-title">Enter a Team or Event to get Started</h4>
+                    <h4 class="card-title">Enter an event to get started</h4>
                     
                     <form class="example-form">
                         <mat-form-field class="example-full-width" appearance="fill">
-                            <mat-label>Number</mat-label>
-                            <input type="text"
-                                    placeholder="Pick one"
-                                    aria-label="Number"
-                                    matInput
-                                    [formControl]="myControl"
-                                    [matAutocomplete]="auto">
-                            <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option *ngFor="let option of options" [value]="option">
-                                {{option}}
+                          <mat-label>Number</mat-label>
+                          <input type="text"
+                                 placeholder="Pick one"
+                                 aria-label="Number"
+                                 matInput
+                                 [formControl]="myControl"
+                                 [matAutocomplete]="auto">
+                          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete" (optionSelected)="onSelectionChanged($event)">
+                            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+                              {{option}}
                             </mat-option>
-                            </mat-autocomplete>
+                          </mat-autocomplete>
                         </mat-form-field>
-                        </form>
+                      </form>
+                      
                     
                 </div>
                 <div class="card-footer">

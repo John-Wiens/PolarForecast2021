@@ -122,4 +122,14 @@ export class NavbarComponent implements OnInit {
       }
       return 'Dashboard';
     }
+
+    getEvent(){
+        const event = localStorage.getItem('eventName');
+        if(event == null){
+            return ""
+        } else{
+            return event;
+        }
+    }
+
 }

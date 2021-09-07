@@ -39,6 +39,7 @@ def read_item():
         data = []
         for entry in response:
             del entry['_id']
+            del entry['teams']
             data.append(entry)
         return {'data': data}
     else:

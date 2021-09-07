@@ -50,11 +50,23 @@ export class RankingsComponent implements OnInit {
   constructor(private api: ApiService) { }
 
   getRankings() {
-    this.api.getRankings('2021isjo')
+    const event = this.getEvent();
+    if(event!= null){
+      this.api.getRankings(event)
       .subscribe(data => {
         if ('rankings' in data){
           this.data = data['rankings'];
         }
       });
+    }
+  }
+
+  getEvent(){
+    const event = localStorage.getItem('event');
+    if(event == null){
+        return ""
+    } else{
+        return event;
+    }
   }
 }
