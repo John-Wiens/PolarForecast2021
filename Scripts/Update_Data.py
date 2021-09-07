@@ -101,9 +101,9 @@ def update_calculations(event_code, matches, teams, force_update = False):
             team['cell_count']= bpm
             team['extra_rp']= team_powers[index][8]
             team['fouls'] = team_powers[index][7]
-            
-            updated_team = db.update_one('teams', team)
             index +=1
+            db.update_one('teams', team)
+            
         except Exception as e:
             db.log_msg("Issue Updating Team Power Rankings"+ team+ str(e))
         

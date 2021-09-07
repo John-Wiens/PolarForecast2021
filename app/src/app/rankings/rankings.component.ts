@@ -38,7 +38,8 @@ export class RankingsComponent implements OnInit {
   data: any = [];//this.ELEMENT_DATA;
 
   @ViewChild(MatSort) sort: MatSort;
-
+  
+  dataSource = null;
 
   ngOnInit() {
     this.getRankings();
@@ -56,6 +57,9 @@ export class RankingsComponent implements OnInit {
       .subscribe(data => {
         if ('rankings' in data){
           this.data = data['rankings'];
+          console.log(this.data);
+          this.dataSource = new MatTableDataSource(this.data);
+          this.dataSource.sort = this.sort;
         }
       });
     }
