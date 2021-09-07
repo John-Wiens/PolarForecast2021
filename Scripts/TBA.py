@@ -8,7 +8,7 @@ import json
 #
 
 API_URL = 'https://www.thebluealliance.com/api/v3'
-AUTH_KEY = '0Ws8VJsYtWRYmN6CQwahhtiM0vP4pl83J23Lpf4AqsdwmoLmRU7DkXYGDPTGUBWk'
+AUTH_KEY = ''
 
 previous_requests = {}
 previous_responses = {}
