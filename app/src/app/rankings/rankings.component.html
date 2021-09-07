@@ -19,42 +19,42 @@
 
                       <ng-container matColumnDef="opr">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> OPR </th>
-                        <td mat-cell *matCellDef="let element"> {{element.opr}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.opr | number:'1.2-2'}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="auto">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Auto </th>
-                        <td mat-cell *matCellDef="let element"> {{element.auto}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.auto | number:'1.2-2'}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="control">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Color Wheel </th>
-                        <td mat-cell *matCellDef="let element"> {{element.control}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.control | number:'1.2-2'}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="endgame">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Endgame </th>
-                        <td mat-cell *matCellDef="let element"> {{element.endgame}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.endgame | number:'1.2-2'}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="cells">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Cells </th>
-                        <td mat-cell *matCellDef="let element"> {{element.cells}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.cells | number:'1.2-2'}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="bpm">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> BPM </th>
-                        <td mat-cell *matCellDef="let element"> {{element.bpm}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.bpm | number:'1.2-2'}} </td>
                       </ng-container>
                     
                       <ng-container matColumnDef="fouls">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Fouls </th>
-                        <td mat-cell *matCellDef="let element"> {{element.fouls}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.fouls | number:'1.2-2'}} </td>
                       </ng-container>
 
                       <ng-container matColumnDef="power">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Power </th>
-                        <td mat-cell *matCellDef="let element"> {{element.power}} </td>
+                        <td mat-cell *matCellDef="let element"> {{element.power | number:'1.2-2'}} </td>
                       </ng-container>
                     
                       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

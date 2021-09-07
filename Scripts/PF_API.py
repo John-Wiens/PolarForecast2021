@@ -38,8 +38,11 @@ def read_item():
     if response is not None:
         data = []
         for entry in response:
-            del entry['_id']
-            del entry['teams']
+            if 'teams' in entry:
+                del entry['teams']
+            if '_id' in entry:
+                del entry['_id']
+            
             data.append(entry)
         return {'data': data}
     else:
@@ -66,6 +69,7 @@ def read_item(event_key: str):
 @app.get("/events/{event_key}/rankings")
 def read_item(event_key: str):
     response = db.find_one('rankings', event_key)
+    print(response)
     if response is not None:
         del response['_id']
         return response

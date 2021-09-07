@@ -4,14 +4,9 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { CdkTableModule } from "@angular/cdk/table";
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { ApiService } from '../services/api.service';
+import { RoundPipe } from '../round.pipe';
 
 
-@Pipe({name: 'round'})
-export class RoundPipe {
-  transform (input:number) {
-    return Math.round(input*100)/100.0;
-  }
-}
 
 
 export interface Element {
@@ -43,10 +38,7 @@ export class RankingsComponent implements OnInit {
 
   ngOnInit() {
     this.getRankings();
-    this.data.sort = this.sort;
   }
-
-  
 
   constructor(private api: ApiService) { }
 

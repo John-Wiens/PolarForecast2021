@@ -86,7 +86,6 @@ def update_calculations(event_code, matches, teams, force_update = False):
     index = 0
     opr_matrix = team_powers[:,0] + team_powers[:,1] + endgame_array[:,0] + team_powers[:,3]
     max_opr = np.max(opr_matrix)
-    team_list = []
     for team in teams:
         opr = opr_matrix[index]
         pr = 100 * (opr/max_opr)
@@ -106,7 +105,6 @@ def update_calculations(event_code, matches, teams, force_update = False):
             
         except Exception as e:
             db.log_msg("Issue Updating Team Power Rankings"+ team+ str(e))
-        
         event = db.find_one('events',event_code)
         event['teams'] = teams
         db.update_one('events', event)
@@ -134,7 +132,11 @@ def update_calculations(event_code, matches, teams, force_update = False):
         db.log_msg("Issue Updating Event Update Time", event_code, str(e))
         raise
 
-    
+def clean_num(num):
+    if num is None:
+        return 0
+    else:
+        return num
 
 def update_match_predictions(event, matches, teams):
     for match in matches:
@@ -153,27 +155,26 @@ def update_match_predictions(event, matches, teams):
                 blue_team = db.find_one('teams', match['blue'+str(i)])
                 red_team = db.find_one('teams', match['red'+str(i)])
 
-                match["blue_score"] += blue_team["opr"]
-                match["blue_auto_score"] += blue_team["auto_pr"]
-                match["blue_control_score"] += blue_team["control_pr"]
-                match["blue_endgame_score"] += blue_team["endgame_pr"]
-                match["blue_cell_score"] += blue_team["cell_pr"]
-                match["blue_auto_score"] += blue_team["auto_pr"]
+                match["blue_score"] += clean_num(blue_team["opr"])
+                match["blue_auto_score"] += clean_num(blue_team["auto_pr"])
+                match["blue_control_score"] += clean_num(blue_team["control_pr"])
+                match["blue_endgame_score"] += clean_num(blue_team["endgame_pr"])
+                match["blue_cell_score"] += clean_num(blue_team["cell_pr"])
+                match["blue_auto_score"] += clean_num(blue_team["auto_pr"])
 
-                match["red_score"] += red_team["opr"]
-                match["red_auto_score"] += red_team["auto_pr"]
-                match["red_control_score"] += red_team["control_pr"]
-                match["red_endgame_score"] += red_team["endgame_pr"]
-                match["red_cell_score"] += red_team["cell_pr"]
-                match["red_auto_score"] += red_team["auto_pr"]
+                match["red_score"] += clean_num(red_team["opr"])
+                match["red_auto_score"] += clean_num(red_team["auto_pr"])
+                match["red_control_score"] += clean_num(red_team["control_pr"])
+                match["red_endgame_score"] += clean_num(red_team["endgame_pr"])
+                match["red_cell_score"] += clean_num(red_team["cell_pr"])
+                match["red_auto_score"] += clean_num(red_team["auto_pr"])
 
 
+                predicted_blue_cells += clean_num(blue_team["cell_count"])
+                predicted_blue_endgame += clean_num(blue_team["endgame_pr"])
 
-                predicted_blue_cells += blue_team["cell_count"]
-                predicted_blue_endgame += blue_team["endgame_pr"]
-
-                predicted_red_cells += red_team["cell_count"]
-                predicted_red_endgame += red_team["endgame_pr"]
+                predicted_red_cells += clean_num(red_team["cell_count"])
+                predicted_red_endgame += clean_num(red_team["endgame_pr"])
                 
             if predicted_blue_endgame >= 50:
                 match["blue_rp"] +=1
@@ -191,14 +192,14 @@ def update_match_predictions(event, matches, teams):
                 match["blue_rp"] +=1
                 match["red_rp"] +=1
             
-            match["predicted_blue_score"] =  match["blue_score"]
-            match["predicted_red_score"] =  match["red_score"]
+            match["predicted_blue_score"] =   clean_num(match["blue_score"])
+            match["predicted_red_score"] =   clean_num(match["red_score"])
             db.update_one('matches', match)
 
 
 def update_data():
     if(TBA.check_connection()):
-        events = update_events(force_update = False)
+        events = update_events(force_update = True)
         for event in events:
             matches = update_matches(event)
             teams = update_teams(event)

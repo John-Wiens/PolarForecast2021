@@ -12,14 +12,14 @@ class Match(BaseModel):
     comp_level: str
     event_key: str
     match_number: int
-    set_number: int
-    time: int
-    blue0: int
-    red0: int
-    blue1: int
-    red1: int
-    blue2: int
-    red2: int
+    set_number: Optional[int] = 0
+    time: Optional[int] = 0
+    blue0: int = 0
+    red0: int = 0
+    blue1: int = 0
+    red1: int = 0
+    blue2: int = 0
+    red2: int = 0
 
     blue_score: float = 0
     blue_auto_score: float = 0 

@@ -11,6 +11,7 @@ def log_msg(msg, type = 'INFO',):
         'Message': msg,
         'Type': type
     }
+    print("DBLog", event)
     insert_one('Log', event)
     
 

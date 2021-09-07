@@ -11,6 +11,7 @@ import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.compon
 import { CdkTableModule } from "@angular/cdk/table";
 import { MatSortModule, MatSort} from '@angular/material/sort';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { RoundPipe } from './round.pipe';
 
 @NgModule({
   imports: [
@@ -30,6 +31,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
   declarations: [
     AppComponent,
     AdminLayoutComponent,
+    RoundPipe,
 
   ],
   providers: [],
