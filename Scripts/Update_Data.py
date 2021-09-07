@@ -2,9 +2,9 @@
 import re
 import numpy as np
 import azure.functions as func
-from Match import build_match
-from Team import build_team
-from Ranking import Rank, Rankings
+from Types.Match import build_match
+from Types.Team import build_team
+from Types.Ranking import Rank, Rankings
 import TBA
 import DB_Access as db
 from Process_Data import build_score_matrix, solve_matrix

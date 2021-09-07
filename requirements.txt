@@ -7,3 +7,5 @@ pymongo
 numpy
 scipy
 fastapi
+requests
+uvicorn
