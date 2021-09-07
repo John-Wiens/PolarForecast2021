@@ -27,8 +27,11 @@ export class MatchesComponent implements OnInit {
 
   //displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = null;
+  finalsDataSource = null;
 
   data: any = [];//this.ELEMENT_DATA;
+  finalsData: any = [];
+
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -43,6 +46,7 @@ export class MatchesComponent implements OnInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
+    this.finalsDataSource.sort = this.sort;
   }
 
   
@@ -59,9 +63,31 @@ export class MatchesComponent implements OnInit {
           console.log(this.data);
           this.dataSource = new MatTableDataSource(this.data);
           this.dataSource.sort = this.sort;
+          let elims = true;
+          for(let i=0; i < this.data.length; i++){
+            if(this.data[i]['results'] != 'Actual'){
+              elims = false;
+            }
+          }
+          if(elims){
+            this.getFinalsMatches();
+          }
         }
       });
-    
+    }
+  }
+  getFinalsMatches(){
+    const event = localStorage.getItem('event');
+    if(event!= null){
+      this.api.getMatches(event,'elim')
+      .subscribe(data => {
+        if ('data' in data){
+          this.finalsData = data['data'];
+          console.log(this.finalsData);
+          this.finalsDataSource = new MatTableDataSource(this.finalsData);
+          this.finalsDataSource.sort = this.sort;
+        }
+      });
     }
   }
 }

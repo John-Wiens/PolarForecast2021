@@ -93,7 +93,7 @@ def read_item(event_key: str, comp_level: str = None):
             filters['comp_level'] = { '$not': 'qm' }
         else:
             filters['comp_level'] = comp_level
-    
+    print(filters)
     response = db.find('matches', filters)
     if response is not None:
         data = []
