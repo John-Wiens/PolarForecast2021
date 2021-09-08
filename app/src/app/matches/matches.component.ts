@@ -33,12 +33,14 @@ export class MatchesComponent implements OnInit {
   finalsData: any = [];
 
 
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('sort') sort: MatSort;
+  @ViewChild('finalsSort') finalsSort: MatSort;
 
 
   ngOnInit() {
     this.getMatches();
-    //this.data.sort = this.sort;
+    this.data.sort = this.sort;
+    this.finalsData.sort = this.finalsSort;
   }
 
   //dataSource = null;//new MatTableDataSource(this.data);
@@ -46,7 +48,7 @@ export class MatchesComponent implements OnInit {
 
   ngAfterViewInit() {
     this.dataSource.sort = this.sort;
-    this.finalsDataSource.sort = this.sort;
+    //this.finalsDataSource.sort = this.sort;
   }
 
   
@@ -83,9 +85,22 @@ export class MatchesComponent implements OnInit {
       .subscribe(data => {
         if ('data' in data){
           this.finalsData = data['data'];
+
+          for(let i=0; i < this.finalsData.length;i++){
+            let entry = this.finalsData[i];
+            let comp_level = entry['comp_level']
+            if(comp_level == 'f'){
+              entry['match_order'] = 100 + entry['set_number'];
+            }else if(comp_level == 'sf'){
+              entry['match_order'] = 10 + entry['set_number'];
+            } else if(comp_level == 'qf'){
+              entry['match_order'] = entry['set_number'];
+            }
+          }
+
           console.log(this.finalsData);
           this.finalsDataSource = new MatTableDataSource(this.finalsData);
-          this.finalsDataSource.sort = this.sort;
+          this.finalsDataSource.sort = this.finalsSort;
         }
       });
     }

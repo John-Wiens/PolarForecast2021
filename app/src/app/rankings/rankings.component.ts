@@ -4,7 +4,6 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { CdkTableModule } from "@angular/cdk/table";
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { ApiService } from '../services/api.service';
-import { RoundPipe } from '../round.pipe';
 
 
 
