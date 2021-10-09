@@ -51,8 +51,6 @@ export class MatchesComponent implements OnInit {
     //this.finalsDataSource.sort = this.sort;
   }
 
-  
-
   constructor(private api: ApiService) { }
 
   getMatches() {

@@ -90,7 +90,7 @@ def read_item(event_key: str, comp_level: str = None):
     filters = {'event_key':event_key}
     if comp_level:
         if comp_level == 'elim':
-            filters['comp_level'] = { '$not': 'qm' }
+            filters['comp_level'] = { '$not': {'$eq':'qm'}}
         else:
             filters['comp_level'] = comp_level
     print(filters)

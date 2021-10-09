@@ -1,6 +1,9 @@
 import numpy as np
 from scipy.optimize import nnls
+import math
 
+def get_prob(mean, variance):
+    return 0.5 * math.erfc(-mean/math.sqrt(2*variance))
 
 # A is the condition Matrix
 # y is the output matrix
@@ -57,7 +60,7 @@ def build_score_matrix(event_key, teams, matches):
     teams = np.array(teams)
     team_array = np.zeros([num_matches*2,num_teams])
     score_array = np.zeros([num_matches*2,len(metrics)])
-    endgame_array = np.zeros([len(teams),2])
+
     i = 0
     for match in matches:
         if match["results"] == "Actual":
@@ -73,29 +76,69 @@ def build_score_matrix(event_key, teams, matches):
                 team_array[i][blue_index] = 1
                 team_array[num_matches+i][red_index] = 1
                 
+            i+=1
+
+    return team_array, score_array
+    
+def get_climb_results(teams, matches):
+    #Endgame array columns: Average Points, Number of Climbs, Percent of Climbs, Climb Variance
+    teams = np.array(teams)
+    endgame_array = np.zeros([len(teams),4])
+    for match in matches:
+        if match["results"] == "Actual":
+            for j in range(0,3):
+                blue_index = np.searchsorted(teams, float(match["blue"+str(j)]))
+                red_index = np.searchsorted(teams, float(match["red"+str(j)]))
+
                 if match["blue_endgame_robot"+str(j+1)] == "Park":
                     endgame_array[blue_index][0] += 5
-                    endgame_array[blue_index][1] +=1
+                    endgame_array[blue_index][1] += 1
                 elif match["blue_endgame_robot"+str(j+1)] == "Hang":
                     endgame_array[blue_index][0] += 25
-                    endgame_array[blue_index][1] +=1
+                    endgame_array[blue_index][1] += 1
+                    endgame_array[blue_index][2] += 1
                 else:
                     endgame_array[blue_index][1] +=1
+
                 if match["red_endgame_robot"+str(j+1)] == "Park":
                     endgame_array[red_index][0] += 5
-                    endgame_array[red_index][1] +=1
+                    endgame_array[red_index][1] += 1
                 elif match["red_endgame_robot"+str(j+1)] == "Hang":
                     endgame_array[red_index][0] += 25
-                    endgame_array[red_index][1] +=1
+                    endgame_array[red_index][1] += 1
+                    endgame_array[red_index][2] += 1
                 else:
-                    endgame_array[red_index][1] +=1
-            i+=1        
+                    endgame_array[red_index][1] += 1
+
     for i in range(0,len(endgame_array)):
         endgame_array[i][0] = safe_div(endgame_array[i][0],endgame_array[i][1])
+        endgame_array[i][2] = safe_div(endgame_array[i][2],endgame_array[i][1])
 
-    print(team_array, score_array, endgame_array)
-    return team_array, score_array, endgame_array
+    for match in matches:
+        if match["results"] == "Actual":
+            for j in range(0,3):
+                blue_index = np.searchsorted(teams, float(match["blue"+str(j)]))
+                red_index = np.searchsorted(teams, float(match["red"+str(j)])) 
+                
+                if match["blue_endgame_robot"+str(j+1)] == "Park":
+                    endgame_array[blue_index][3] += (endgame_array[blue_index][0] - 5)**2
+
+                elif match["blue_endgame_robot"+str(j+1)] == "Hang":
+                    endgame_array[blue_index][3] += (endgame_array[blue_index][0] - 25)**2
+                else:
+                    endgame_array[blue_index][3] += (endgame_array[blue_index][0])**2
+
+                if match["red_endgame_robot"+str(j+1)] == "Park":
+                    endgame_array[red_index][3] += (endgame_array[red_index][0] - 5)**2
+                elif match["red_endgame_robot"+str(j+1)] == "Hang":
+                    endgame_array[red_index][3] += (endgame_array[red_index][0] - 25)**2
+                else:
+                    endgame_array[red_index][3] += (endgame_array[red_index][0] - 0)**2
     
+    for i in range(0,len(endgame_array)):
+        endgame_array[i][3] = safe_div(endgame_array[i][3],endgame_array[i][1])
+    return endgame_array
+
 def solve_matrix(matrix, solution):
     num_teams = matrix.shape[1]
     num_equations = matrix.shape[0]

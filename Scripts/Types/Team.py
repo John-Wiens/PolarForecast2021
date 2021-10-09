@@ -14,6 +14,10 @@ class Team(BaseModel):
     # Statistical Metrics
     power: Optional[float]
     opr: Optional[float]
+    climb_percent: Optional[float]
+    score_variance: Optional[float]
+    cell_variance: Optional[float]
+    climb_variance: Optional[float]
     auto_pr: Optional[float]
     control_pr: Optional[float]
     endgame_pr: Optional[float]
