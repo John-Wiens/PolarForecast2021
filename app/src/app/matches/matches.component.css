@@ -9,4 +9,10 @@ th {
 td {
   min-width: 96px;
 }
+.text-blue{
+  color: #2196f3
+}
 
+.text-red{
+  color: #f44336
+}

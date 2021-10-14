@@ -5,44 +5,72 @@
       <div class="card">
         <div class="card-body">
           <h1> Elimination Matches</h1>
-          <mat-table matSort #finalsSort="matSort" [dataSource]="finalsDataSource" matSortActive="match_order"
-            matSortDirection="asc">
+          <div *ngIf='getResponsiveMode()==false'>
+            <mat-table matSort #finalsSort="matSort" [dataSource]="finalsDataSource" matSortActive="match_order"
+              matSortDirection="asc">
 
-            <ng-container matColumnDef="match_number">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Match </th>
-              <td mat-cell *matCellDef="let element"> {{element.comp_level}} - {{element.set_number}}-
-                {{element.match_number}} </td>
-            </ng-container>
+              <ng-container matColumnDef="match_number">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Match </th>
+                <td mat-cell *matCellDef="let element"> {{element.comp_level}} - {{element.set_number}}-
+                  {{element.match_number}} </td>
+              </ng-container>
 
-            <ng-container matColumnDef="blue_score">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue Score </th>
-              <td mat-cell *matCellDef="let element"> {{element.blue_score}} </td>
-            </ng-container>
+              <ng-container matColumnDef="blue_score">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue Score </th>
+                <td mat-cell *matCellDef="let element"> {{element.blue_score}} </td>
+              </ng-container>
 
-            <ng-container matColumnDef="blue_rp">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue RP </th>
-              <td mat-cell *matCellDef="let element"> {{element.blue_rp}} </td>
-            </ng-container>
+              <ng-container matColumnDef="blue_rp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue RP </th>
+                <td mat-cell *matCellDef="let element"> {{element.blue_rp}} </td>
+              </ng-container>
 
-            <ng-container matColumnDef="red_score">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Red Score </th>
-              <td mat-cell *matCellDef="let element"> {{element.red_score}} </td>
-            </ng-container>
+              <ng-container matColumnDef="red_score">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Red Score </th>
+                <td mat-cell *matCellDef="let element"> {{element.red_score}} </td>
+              </ng-container>
 
-            <ng-container matColumnDef="red_rp">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Red RP </th>
-              <td mat-cell *matCellDef="let element"> {{element.red_rp}} </td>
-            </ng-container>
+              <ng-container matColumnDef="red_rp">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Red RP </th>
+                <td mat-cell *matCellDef="let element"> {{element.red_rp}} </td>
+              </ng-container>
 
-            <ng-container matColumnDef="results">
-              <th mat-header-cell *matHeaderCellDef mat-sort-header> Results </th>
-              <td mat-cell *matCellDef="let element"> {{element.results}} </td>
-            </ng-container>
+              <ng-container matColumnDef="results">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Results </th>
+                <td mat-cell *matCellDef="let element"> {{element.results}} </td>
+              </ng-container>
 
 
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-          </mat-table>
+              <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+            </mat-table>
+          </div>
+          <div *ngIf='getResponsiveMode()'>
+            <mat-expansion-panel *ngFor='let elimMatch of finalsData'>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{elimMatch.comp_level}}{{elimMatch.match_number}}
+                </mat-panel-title>
+                <mat-panel-description>
+                  This is a summary of the content
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-card >
+                <mat-card-title class='text-blue'> Blue Alliance</mat-card-title>
+                Blue 1: {{elimMatch.blue0}}<br>
+                Blue 2: {{elimMatch.blue1}}<br>
+                Blue 3: {{elimMatch.blue2}}<br>
+                Blue Score: {{elimMatch.blue_score}}
+              </mat-card>
+              <mat-card >
+                <mat-card-title class='text-red'> Red Alliance</mat-card-title>
+                Red 1: {{elimMatch.red0}}<br>
+                Red 2: {{elimMatch.red1}}<br>
+                Red 3: {{elimMatch.red2}}<br>
+                Red Score: {{elimMatch.red_score}}
+              </mat-card>
+            </mat-expansion-panel>
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, Pipe, ViewChild} from '@angular/core';
+import { Component, OnInit, Pipe, ViewChild, HostListener} from '@angular/core';
 import { DataSource } from '@angular/cdk/table';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { CdkTableModule } from "@angular/cdk/table";
@@ -36,11 +36,23 @@ export class MatchesComponent implements OnInit {
   @ViewChild('sort') sort: MatSort;
   @ViewChild('finalsSort') finalsSort: MatSort;
 
+  public innerWidth: any;
 
   ngOnInit() {
     this.getMatches();
     this.data.sort = this.sort;
     this.finalsData.sort = this.finalsSort;
+    this.innerWidth = window.innerWidth;
+  }
+
+
+  @HostListener('window:resize', ['$event'])
+    onResize(event) {
+    this.innerWidth = window.innerWidth;
+  }
+
+  getResponsiveMode(){
+    return this.innerWidth < 640;
   }
 
   //dataSource = null;//new MatTableDataSource(this.data);

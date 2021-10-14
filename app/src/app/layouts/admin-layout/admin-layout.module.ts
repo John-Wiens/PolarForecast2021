@@ -18,8 +18,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { CdkTableModule } from "@angular/cdk/table";
 import { MatSortModule } from '@angular/material/sort';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-
+import { MatAutocompleteModule} from '@angular/material/autocomplete';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 @NgModule({
   imports: [
     CommonModule,
@@ -36,6 +37,8 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
     CdkTableModule,
     MatSortModule,
     MatAutocompleteModule,
+    MatExpansionModule,
+    MatCardModule,
   ],
   declarations: [
     DashboardComponent,

@@ -275,7 +275,17 @@ def update_match_predictions(event, matches, teams):
             match['results'] = match['win_prob']
             print(match['key'], match['blue_score'], match['red_score'], match['win_prob'])
             db.update_one('matches', match)
+'''
+def update_rank_predictions(matches, teams):
+    rps = {}
+    for match in matches:
+        if match['results'] == 'Actual':
+            for i in range(0,3):
+                rps['blue'+str(i)]
 
+        else:
+            pass
+'''
 
 def update_data():
     if(TBA.check_connection()):
@@ -285,6 +295,8 @@ def update_data():
             teams = update_teams(event)
             update_calculations(event, matches, teams)
             update_match_predictions(event, matches, teams)
+            print(matches, teams)
+            #update_rank_predictions()
 
 def main(mytimer: func.TimerRequest) -> None:
     update_data()
