@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from fastapi_utils.tasks import repeat_every
-from Update_Data import update_data
+#from Update_Data import update_data
 
 app = FastAPI()
 
@@ -108,6 +108,7 @@ def read_item(event_key: str, comp_level: str = None):
 @repeat_every(seconds=60*10)
 def update_database():
     if run_analysis:
-        update_data()
+        #update_data()
+        pass
 
 
