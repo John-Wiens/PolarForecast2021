@@ -9,7 +9,7 @@ from Update_Data import update_data
 
 app = FastAPI()
 
-run_analysis = False
+run_analysis = True
 
 origins = [
     "http://localhost",
