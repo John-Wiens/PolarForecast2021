@@ -4,7 +4,7 @@ from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-from fastapi_utils.tasks import repeat_every
+#from fastapi_utils.tasks import repeat_every
 #from Update_Data import update_data
 
 app = FastAPI()
@@ -104,11 +104,11 @@ def read_item(event_key: str, comp_level: str = None):
     else:
         return 404
 
-@app.on_event("startup")
-@repeat_every(seconds=60*10)
-def update_database():
-    if run_analysis:
-        #update_data()
-        pass
+#@app.on_event("startup")
+#@repeat_every(seconds=60*10)
+#def update_database():
+#    if run_analysis:
+#        #update_data()
+#        pass
 
 
