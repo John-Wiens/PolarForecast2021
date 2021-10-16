@@ -88,6 +88,7 @@ export class MatchesComponent implements OnInit {
       });
     }
   }
+
   getFinalsMatches(){
     const event = localStorage.getItem('event');
     if(event!= null){
@@ -113,6 +114,22 @@ export class MatchesComponent implements OnInit {
           this.finalsDataSource.sort = this.finalsSort;
         }
       });
+    }
+  }
+
+  getWinner(match){
+    if(match['blue_score'] > match['red_score']){
+      return 'Blue'
+    } else{
+      return 'Red'
+    } 
+  }
+
+  getWinnerPoints(match){
+    if(match['blue_score'] > match['red_score']){
+      return Math.round(match['blue_score'])
+    } else{
+      return Math.round(match['red_score'])
     }
   }
 }

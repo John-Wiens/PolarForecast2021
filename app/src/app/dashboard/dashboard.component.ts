@@ -21,8 +21,8 @@ export class DashboardComponent implements OnInit {
  
   
   ngOnInit() {
-    this.getOptions();
-    
+    console.log('test');
+    this.getOptions(); 
   }
 
   onSelectionChanged(event: MatAutocompleteSelectedEvent) {
@@ -43,7 +43,9 @@ export class DashboardComponent implements OnInit {
     this.api.getEvents()
       .subscribe(data => {
         if('data' in data){
+
           this.data = data['data'];
+          console.log(this.data);
           for(let i =0; i < data['data'].length;i++){
             this.addOption('name',data['data'][i]);
           }

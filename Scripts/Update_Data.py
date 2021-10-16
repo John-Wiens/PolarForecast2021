@@ -2,10 +2,11 @@
 import re
 import numpy as np
 import math
-import azure.functions as func
+
 from Types.Match import build_match
 from Types.Team import build_team
 from Types.Ranking import Rank, Rankings
+
 import TBA
 import DB_Access as db
 from Process_Data import build_score_matrix, solve_matrix, get_climb_results, get_prob
@@ -27,7 +28,8 @@ def update_events(force_update = False):
             start = get_as_date(event['start_date'])
             end = get_as_date(event['end_date'])
             
-            if today >= start and today <= end or event['event_code'] == 'cacg' or force_update: #isjo
+            if event['event_code'] == 'catt':
+            #if today >= start and today <= end or force_update:# or event['event_code'] == 'cacg'  #isjo
                 event_list.append(event['key'])
             
             db.update_one('events', event)
@@ -69,6 +71,10 @@ def update_teams(event_code, force_update = False):
             db_teams.append(as_dict)
 
     db_teams = sorted(db_teams, key=lambda k: float(k['key']))
+
+    event = db.find_one('events',event_code)
+    event['teams'] = teams
+    db.update_one('events', event)
 
     return db_teams
 
@@ -126,9 +132,7 @@ def update_calculations(event_code, matches, teams, force_update = False):
             
         except Exception as e:
             db.log_msg("Issue Updating Team Power Rankings"+ team+ str(e))
-        event = db.find_one('events',event_code)
-        event['teams'] = teams
-        db.update_one('events', event)
+        
     
     # Update Rankings Table
     try:
@@ -219,7 +223,6 @@ def update_match_predictions(event, matches, teams):
                     predicted_red_cells += clean_num(red_team["cell_count"])
                     predicted_red_endgame += clean_num(red_team["endgame_pr"])
                 except:
-                    print('')
                     blue_climb_probs.append(0)
                     red_climb_probs.append(0)
             
@@ -273,19 +276,26 @@ def update_match_predictions(event, matches, teams):
             match["predicted_red_score"] = clean_num(match["red_score"])
              
             match['results'] = match['win_prob']
-            print(match['key'], match['blue_score'], match['red_score'], match['win_prob'])
+            #print(match['key'], match['blue_score'], match['red_score'], match['win_prob'])
             db.update_one('matches', match)
-'''
+
 def update_rank_predictions(matches, teams):
     rps = {}
-    for match in matches:
-        if match['results'] == 'Actual':
-            for i in range(0,3):
-                rps['blue'+str(i)]
+    if len(matches) !=0:
+        for match in matches:
+            if match['results'] == 'Actual':
+                for i in range(0,3):
+                    blue_team = match['blue'+str(i)]
+                    if blue_team in rps:
+                        rps[blue_team] += 0
+                    else:
+                        rps[blue_team] = 0
 
-        else:
-            pass
-'''
+            else:
+                pass
+    else:
+        pass
+
 
 def update_data():
     if(TBA.check_connection()):
@@ -295,12 +305,8 @@ def update_data():
             teams = update_teams(event)
             update_calculations(event, matches, teams)
             update_match_predictions(event, matches, teams)
-            print(matches, teams)
-            #update_rank_predictions()
-
-def main(mytimer: func.TimerRequest) -> None:
-    update_data()
-
+            #update_rank_predictions(matches, teams)
+            print(matches)
 
 if __name__ == '__main__':
     update_data()

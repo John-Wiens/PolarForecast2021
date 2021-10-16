@@ -1,15 +1,15 @@
 
 import DB_Access as db
-import azure.functions as func
 from typing import Optional
 from fastapi import FastAPI
-from http_asgi import AsgiMiddleware
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
-
+from fastapi_utils.tasks import repeat_every
+from Update_Data import update_data
 
 app = FastAPI()
 
+run_analysis = False
 
 origins = [
     "http://localhost",
@@ -104,5 +104,10 @@ def read_item(event_key: str, comp_level: str = None):
     else:
         return 404
 
-def main(req: func.HttpRequest, context: func.Context) -> func.HttpResponse:
-    return AsgiMiddleware(app).handle(req, context)
+@app.on_event("startup")
+@repeat_every(seconds=60*10)
+def update_database():
+    if run_analysis:
+        update_data()
+
+
