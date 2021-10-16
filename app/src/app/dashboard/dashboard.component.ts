@@ -21,7 +21,6 @@ export class DashboardComponent implements OnInit {
  
   
   ngOnInit() {
-    console.log('test');
     this.getOptions(); 
   }
 
