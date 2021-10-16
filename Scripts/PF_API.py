@@ -14,6 +14,7 @@ run_analysis = False
 origins = [
     "http://localhost",
     "http://localhost:4200",
+    "https://polarforecastfrc.com",
     "*"
 ]
 
