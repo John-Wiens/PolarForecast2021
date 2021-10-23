@@ -3,7 +3,13 @@ from scipy.optimize import nnls
 import math
 
 def get_prob(mean, variance):
-    return 0.5 * math.erfc(-mean/math.sqrt(2*variance))
+    if variance == 0:
+        if mean > 0:
+            return 1
+        else:
+            return 0
+    else:
+        return 0.5 * math.erfc(-mean/math.sqrt(2*variance))
 
 # A is the condition Matrix
 # y is the output matrix
@@ -62,6 +68,8 @@ def build_score_matrix(event_key, teams, matches):
     score_array = np.zeros([num_matches*2,len(metrics)])
 
     i = 0
+
+    print(teams)
     for match in matches:
         if match["results"] == "Actual":
             metric_count = 0
@@ -71,6 +79,7 @@ def build_score_matrix(event_key, teams, matches):
                 metric_count +=1
             
             for j in range(0,3):
+                print(float(match["blue"+str(j)]))
                 blue_index = np.searchsorted(teams, float(match["blue"+str(j)]))
                 red_index = np.searchsorted(teams, float(match["red"+str(j)]))
                 team_array[i][blue_index] = 1

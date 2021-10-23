@@ -12,7 +12,7 @@ import DB_Access as db
 from Process_Data import build_score_matrix, solve_matrix, get_climb_results, get_prob
 from datetime import datetime
 
-
+import sys
 
 
 def get_as_date(date)   :
@@ -28,8 +28,8 @@ def update_events(force_update = False):
             start = get_as_date(event['start_date'])
             end = get_as_date(event['end_date'])
             
-            if event['event_code'] == 'catt':
-            #if today >= start and today <= end or force_update:# or event['event_code'] == 'cacg'  #isjo
+            #if event['event_code'] == 'catt':
+            if today >= start and today <= end or force_update or event['event_code'] == 'cc':  #isjo
                 event_list.append(event['key'])
             
             db.update_one('events', event)
@@ -161,7 +161,7 @@ def clean_num(num):
     if num is None:
         return 0
     else:
-        return num
+        return float(num)
 
 def get_climb_probs(probs):
     single_climb_prob = min(sum(probs),1)
@@ -191,20 +191,49 @@ def update_match_predictions(event, matches, teams):
             
             match["blue_extra_rp"] = 0
             match["red_extra_rp"] = 0
+
+            match["blue_score"] = 0
+            match["blue_auto_score"] = 0
+            match["blue_control_score"] = 0
+            match["blue_endgame_score"] = 0
+            match["blue_cell_score"] = 0
+            match["blue_auto_score"] = 0
+
+            match["red_score"] = 0
+            match["red_auto_score"] = 0
+            match["red_control_score"] = 0
+            match["red_endgame_score"] = 0
+            match["red_cell_score"] = 0
+            match["red_auto_score"] = 0
+
+
+
+
             for i in range(0,3):
                 try:
                     blue_team = db.find_one('teams', match['blue'+str(i)])
                     red_team = db.find_one('teams', match['red'+str(i)])
 
+                    if clean_num(blue_team["opr"]) == 0:
+                        blue_archive = db.find_one('Archive', match['blue'+str(i)])
+                        if blue_archive:
+                            blue_team["opr"] = clean_num(blue_archive["opr"])*2
+                    
+                                        
+                    if clean_num(red_team["opr"]) == 0:
+                        red_archive = db.find_one('Archive', match['red'+str(i)])
+                        if red_archive:
+                            red_team["opr"] = clean_num(red_archive["opr"])*2
+                    
                     match["blue_score"] += clean_num(blue_team["opr"])
                     match["blue_auto_score"] += clean_num(blue_team["auto_pr"])
                     match["blue_control_score"] += clean_num(blue_team["control_pr"])
                     match["blue_endgame_score"] += clean_num(blue_team["endgame_pr"])
                     match["blue_cell_score"] += clean_num(blue_team["cell_pr"])
                     match["blue_auto_score"] += clean_num(blue_team["auto_pr"])
-                    blue_variance += blue_team["score_variance"]
-                    blue_climb_probs.append(blue_team["climb_percent"])
-                    blue_cell_variance += blue_team["cell_variance"]
+                    blue_variance += clean_num(blue_team["score_variance"])
+                    blue_climb_probs.append(clean_num(blue_team["climb_percent"]))
+                    blue_cell_variance += clean_num(blue_team["cell_variance"])
 
                     match["red_score"] += clean_num(red_team["opr"])
                     match["red_auto_score"] += clean_num(red_team["auto_pr"])
@@ -212,9 +241,9 @@ def update_match_predictions(event, matches, teams):
                     match["red_endgame_score"] += clean_num(red_team["endgame_pr"])
                     match["red_cell_score"] += clean_num(red_team["cell_pr"])
                     match["red_auto_score"] += clean_num(red_team["auto_pr"])
-                    red_variance += red_team["score_variance"]
-                    red_climb_probs.append(red_team["climb_percent"])
-                    red_cell_variance += red_team["cell_variance"]
+                    red_variance += clean_num(red_team["score_variance"])
+                    red_climb_probs.append(clean_num(red_team["climb_percent"]))
+                    red_cell_variance += clean_num(red_team["cell_variance"])
 
 
                     predicted_blue_cells += clean_num(blue_team["cell_count"])
@@ -222,7 +251,8 @@ def update_match_predictions(event, matches, teams):
 
                     predicted_red_cells += clean_num(red_team["cell_count"])
                     predicted_red_endgame += clean_num(red_team["endgame_pr"])
-                except:
+                except Exception as e:
+                    print(e, sys.exc_info())
                     blue_climb_probs.append(0)
                     red_climb_probs.append(0)
             
@@ -259,7 +289,7 @@ def update_match_predictions(event, matches, teams):
 
             #win_prob = 0.5 * math.erfc(-win_margin/math.sqrt(2*win_variance))
             win_prob = get_prob(win_margin, win_variance)
-
+            
             if match["blue_score"] > match["red_score"]:
                 match["blue_rp"] +=2
                 match["win_prob"] = win_prob
@@ -276,6 +306,7 @@ def update_match_predictions(event, matches, teams):
             match["predicted_red_score"] = clean_num(match["red_score"])
              
             match['results'] = match['win_prob']
+            #print(match["blue_score"])
             #print(match['key'], match['blue_score'], match['red_score'], match['win_prob'])
             db.update_one('matches', match)
 
@@ -303,10 +334,10 @@ def update_data():
         for event in events:
             matches = update_matches(event)
             teams = update_teams(event)
+            #print(teams)
             update_calculations(event, matches, teams)
             update_match_predictions(event, matches, teams)
             #update_rank_predictions(matches, teams)
-            print(matches)
 
 if __name__ == '__main__':
     update_data()
