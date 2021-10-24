@@ -413,6 +413,7 @@
 
         .sidebar-wrapper{
             padding-bottom: 60px;
+            
         }
 
         .nav-mobile-menu{
@@ -455,7 +456,7 @@
         .navbar .container .navbar-wrapper,
         .navbar .container{
             left: 0;
-            @include transform-translate-x(-260px);
+            @include transform-translate-x(260px);
         }
 
         .sidebar{
