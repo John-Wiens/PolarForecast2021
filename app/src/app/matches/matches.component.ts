@@ -32,6 +32,7 @@ export class MatchesComponent implements OnInit {
   data: any = [];//this.ELEMENT_DATA;
   finalsData: any = [];
 
+  elims = true;
 
   @ViewChild('sort') sort: MatSort;
   @ViewChild('finalsSort') finalsSort: MatSort;
@@ -72,16 +73,19 @@ export class MatchesComponent implements OnInit {
       .subscribe(data => {
         if ('data' in data){
           this.data = data['data'];
-          console.log(this.data);
+          this.data.sort(function(first, second) {
+            return first.match_number - second.match_number;
+           });
           this.dataSource = new MatTableDataSource(this.data);
           this.dataSource.sort = this.sort;
-          let elims = true;
-          for(let i=0; i < this.data.length; i++){
-            if(this.data[i]['results'] != 'Actual'){
-              elims = false;
+          this.elims = true;
+          for (const [key, value] of Object.entries(this.data)) {
+            console.log(key, value);
+            if(value['results'] != 'Actual'){
+              this.elims = false;
             }
           }
-          if(elims){
+          if(this.elims){
             this.getFinalsMatches();
           }
         }
@@ -96,7 +100,7 @@ export class MatchesComponent implements OnInit {
       .subscribe(data => {
         if ('data' in data){
           this.finalsData = data['data'];
-
+          
           for(let i=0; i < this.finalsData.length;i++){
             let entry = this.finalsData[i];
             let comp_level = entry['comp_level']
@@ -108,6 +112,9 @@ export class MatchesComponent implements OnInit {
               entry['match_order'] = entry['set_number'];
             }
           }
+          this.finalsData.sort(function(first, second) {
+            return first.match_order - second.match_order;
+           });
 
           console.log(this.finalsData);
           this.finalsDataSource = new MatTableDataSource(this.finalsData);
