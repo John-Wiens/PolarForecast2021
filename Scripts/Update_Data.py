@@ -31,8 +31,8 @@ def update_events(force_update = False):
             start = get_as_date(event['start_date'])
             end = get_as_date(event['end_date'])
             
-            if event['event_code'] == 'isjo':
-            #if today >= start and today <= end or force_update or event['event_code'] == 'cc':  #isjo
+            #if event['event_code'] == 'cc':
+            if today >= start and today <= end or force_update or event['event_code'] == 'cc':  #isjo
                 event_list.append(event['key'])
             
             db.update_one('events', event)
@@ -368,6 +368,7 @@ def simulate_matches(matches, teams, rps):
                 if red_cell:
                     sim_rps[match['red'+str(i)]] += 1
         ranks = {k: v for k, v in sorted(sim_rps.items(), key=lambda item: item[1], reverse = True)}
+        print(ranks)
         rank = 1
         for key in ranks.keys():
             if key not in team_performances:
@@ -375,6 +376,7 @@ def simulate_matches(matches, teams, rps):
             else:
                 team_performances[key].append(rank)
             rank += 1
+        break
     
     rank_predictions = []
     for key in team_performances:
