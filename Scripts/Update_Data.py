@@ -2,6 +2,7 @@
 import re
 import numpy as np
 import math
+import random
 
 from Types.Match import build_match
 from Types.Team import build_team
@@ -268,7 +269,7 @@ def update_match_predictions(event, matches, teams):
                 match["red_score"] +=15
 
             match['blue_climb_rp_prob'] = min(blue_double + blue_tripple, 1)
-            match['red_cell_rp_prob'] = min(red_double + red_tripple, 1)
+            match['red_climb_rp_prob'] = min(red_double + red_tripple, 1)
 
 
 
@@ -293,13 +294,16 @@ def update_match_predictions(event, matches, teams):
             if match["blue_score"] > match["red_score"]:
                 match["blue_rp"] +=2
                 match["win_prob"] = win_prob
+                match["winner"] = "blue"
             elif match["red_score"] > match["blue_score"]:
                 match["red_rp"] +=1
                 match["win_prob"] = 1 - win_prob
+                match["winner"] = "red"
             else:
                 match["blue_rp"] +=1
                 match["red_rp"] +=1
                 match["win_prob"] = 0
+                match["winner"] = "blue"
             
 
             match["predicted_blue_score"] = clean_num(match["blue_score"])
@@ -310,22 +314,105 @@ def update_match_predictions(event, matches, teams):
             #print(match['key'], match['blue_score'], match['red_score'], match['win_prob'])
             db.update_one('matches', match)
 
-def update_rank_predictions(matches, teams):
-    rps = {}
-    if len(matches) !=0:
+def simulate_matches(matches, teams, rps):
+    team_performances = {}
+    for i in range(0,1000):
+        sim_rps = rps.copy()
         for match in matches:
-            if match['results'] == 'Actual':
-                for i in range(0,3):
-                    blue_team = match['blue'+str(i)]
-                    if blue_team in rps:
-                        rps[blue_team] += 0
-                    else:
-                        rps[blue_team] = 0
+            wins = random.random() < match['win_prob']
 
+            blue_climb = random.random() < match['blue_climb_rp_prob']
+            red_climb = random.random() < match['red_climb_rp_prob']
+            blue_cell = random.random() < match['blue_cell_rp_prob']
+            red_cell = random.random() < match['red_cell_rp_prob']
+
+            for i in range(0,3):
+                if match["predicted_blue_score"] > match["predicted_red_score"]:
+                    if wins:
+                        sim_rps[match['blue'+str(i)]] += 2
+                    else:
+                        sim_rps[match['red'+str(i)]] += 2
+                else:
+                    if wins:
+                        sim_rps[match['red'+str(i)]] += 2
+                    else:
+                        sim_rps[match['blue'+str(i)]] += 2
+
+                if blue_climb:
+                    sim_rps[match['blue'+str(i)]] += 1
+                if blue_cell:
+                    sim_rps[match['blue'+str(i)]] += 1
+
+                if red_climb:
+                    sim_rps[match['red'+str(i)]] += 1
+                if red_cell:
+                    sim_rps[match['red'+str(i)]] += 1
+            #print(match)
+            #print(sim_rps)
+            #input('Press enter to continue')
+        ranks = {k: v for k, v in sorted(sim_rps.items(), key=lambda item: item[1], reverse = True)}
+        rank = 1
+        for key in ranks.keys():
+            if key not in team_performances:
+                team_performances[key] = [rank]
             else:
-                pass
-    else:
-        pass
+                team_performances[key].append(rank)
+            rank += 1
+    
+    rank_predictions = []
+    for key in team_performances:
+        results = team_performances[key]
+        db_entry = {'key':key, 'max':max(results), 'min':min(results),'average':sum(results)/len(results)}
+        rank_predictions.append(db_entry)
+        
+    rank_predictions = sorted(rank_predictions, key=lambda d: d['average'])
+    index = 1
+    for rank in rank_predictions:
+        rank['rank'] = index
+        index +=1
+    return rank_predictions
+
+def update_rank_predictions(event, matches):
+    teams = {}
+    rps = {}
+    predict_matches = []
+
+    if len(matches) ==0:
+        return
+
+    for match in matches:
+        if match['results'] == 'Actual':
+            for i in range(0,3):
+                blue_team = match['blue'+str(i)]
+
+                if blue_team in teams:
+                    rps[blue_team] += match['blue_rp']
+                else:
+                    teams[blue_team] = db.find_one('teams', blue_team)
+                    rps[blue_team] = {match['blue_rp']}
+
+                red_team = match['red'+str(i)]
+                if red_team in teams:
+                    rps[red_team] += match['blue_rp']
+                else:
+                    teams[red_team] = db.find_one('teams', red_team)
+                    rps[red_team] = {match['red_rp']}
+        else:
+            for i in range(0,3):
+                blue_team = match['blue'+str(i)]
+                red_team = match['red'+str(i)]
+                if blue_team not in teams:
+                    teams[blue_team] = 0
+                    rps[blue_team] = 0
+                if red_team not in teams:
+                    teams[red_team] = 0
+                    rps[red_team] = 0
+            predict_matches.append(match)
+    
+    ranks = simulate_matches(predict_matches, teams, rps)
+    db.update_one('rankings_predicted', {'key': event, 'rankings': ranks})
+    
+        
 
 
 def update_data():
@@ -337,7 +424,7 @@ def update_data():
             #print(teams)
             update_calculations(event, matches, teams)
             update_match_predictions(event, matches, teams)
-            #update_rank_predictions(matches, teams)
+            update_rank_predictions(event,matches)
 
 if __name__ == '__main__':
     update_data()

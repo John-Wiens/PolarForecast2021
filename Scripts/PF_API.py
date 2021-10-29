@@ -86,6 +86,34 @@ def read_item(event_key: str, match_key: str):
     else:
         return 404
 
+@app.get("/events/{event_key}/rank_predictions")
+def read_item(event_key: str):
+    response = db.find_one('rankings_predicted', event_key)
+    if response is not None:
+        del response['_id']
+        return response
+    else:
+        return 404
+
+@app.get("/events/{event_key}/matches")
+def read_item(event_key: str, comp_level: str = None):
+    filters = {'event_key':event_key}
+    if comp_level:
+        if comp_level == 'elim':
+            filters['comp_level'] = { '$not': {'$eq':'qm'}}
+        else:
+            filters['comp_level'] = comp_level
+    print(filters)
+    response = db.find('matches', filters)
+    if response is not None:
+        data = []
+        for entry in response:
+            del entry['_id']
+            data.append(entry)
+        return {'data': data}
+    else:
+        return 404
+
 @app.get("/events/{event_key}/matches")
 def read_item(event_key: str, comp_level: str = None):
     filters = {'event_key':event_key}

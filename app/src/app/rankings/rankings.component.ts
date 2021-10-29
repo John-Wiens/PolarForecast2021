@@ -5,18 +5,6 @@ import { CdkTableModule } from "@angular/cdk/table";
 import { MatSortModule, MatSort } from '@angular/material/sort';
 import { ApiService } from '../services/api.service';
 
-
-
-
-export interface Element {
-  position: number,
-  name: string,
-  weight: number,
-  symbol: string
-}
-
-
-
 @Component({
   selector: 'app-rankings',
   templateUrl: './rankings.component.html',
@@ -55,6 +43,8 @@ export class RankingsComponent implements OnInit {
       });
     }
   }
+
+
 
   getEvent(){
     const event = localStorage.getItem('event');

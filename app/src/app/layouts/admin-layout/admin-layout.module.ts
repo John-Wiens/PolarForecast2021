@@ -6,6 +6,7 @@ import { AdminLayoutRoutes } from './admin-layout.routing';
 import { DashboardComponent } from '../../dashboard/dashboard.component';
 import { RankingsComponent } from '../../rankings/rankings.component';
 import { MatchesComponent } from '../../matches/matches.component';
+import { PredictionsComponent } from '../../predictions/predictions.component';
 import { TeamsComponent } from '../../teams/teams.component';
 import { TableListComponent } from '../../table-list/table-list.component';
 import { IconsComponent } from '../../icons/icons.component';
@@ -47,6 +48,7 @@ import { MatCardModule } from '@angular/material/card';
     RankingsComponent,
     MatchesComponent,
     TeamsComponent,
+    PredictionsComponent,
   ]
 })
 

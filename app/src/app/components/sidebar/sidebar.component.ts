@@ -12,6 +12,7 @@ export const ROUTES: RouteInfo[] = [
     { path: '/rankings', title: 'Rankings',  icon:'leaderboard', class: '' },
     { path: '/matches', title: 'Matches',  icon:'content_paste', class: '' },
     { path: '/teams', title: 'Teams',  icon:'group', class: '' },
+    { path: '/predictions', title: 'Predictions',  icon:'analytics', class: '' },
 ];
 
 @Component({

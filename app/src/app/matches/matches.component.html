@@ -91,27 +91,27 @@
 
               <ng-container matColumnDef="blue_score">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue Score </th>
-                <td mat-cell *matCellDef="let element"> {{element.blue_score}} </td>
+                <td mat-cell *matCellDef="let element"> {{element.blue_score | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="blue_rp">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue RP </th>
-                <td mat-cell *matCellDef="let element"> {{element.blue_rp}} </td>
+                <td mat-cell *matCellDef="let element"> {{element.blue_rp | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="red_score">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Red Score </th>
-                <td mat-cell *matCellDef="let element"> {{element.red_score}} </td>
+                <td mat-cell *matCellDef="let element"> {{element.red_score | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="red_rp">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Red RP </th>
-                <td mat-cell *matCellDef="let element"> {{element.red_rp}} </td>
+                <td mat-cell *matCellDef="let element"> {{element.red_rp | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="results">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header> Results </th>
-                <td mat-cell *matCellDef="let element"> {{element.results}} </td>
+                <td mat-cell *matCellDef="let element"> {{element.results }} </td>
               </ng-container>
 
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
@@ -133,16 +133,16 @@
                 Blue 1: {{match.blue0}}<br>
                 Blue 2: {{match.blue1}}<br>
                 Blue 3: {{match.blue2}}<br>
-                Blue RP: {{match.blue_rp}}<br>
-                Blue Score: {{match.blue_score}}
+                Blue RP: {{match.blue_rp | number:'1.0-0'}}<br>
+                Blue Score: {{match.blue_score | number:'1.0-0'}}
               </mat-card>
               <mat-card >
                 <mat-card-title class='text-red'> Red Alliance</mat-card-title>
                 Red 1: {{match.red0}}<br>
                 Red 2: {{match.red1}}<br>
                 Red 3: {{match.red2}}<br>
-                Red RP: {{match.red_rp}}<br>
-                Red Score: {{match.red_score}}
+                Red RP: {{match.red_rp | number:'1.0-0'}}<br>
+                Red Score: {{match.red_score | number:'1.0-0'}}
               </mat-card>
             </mat-expansion-panel>
           </div>

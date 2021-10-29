@@ -23,6 +23,9 @@ export class ApiService {
 
     return this.http.get(endpoint);
   }
+  getPredictedRankings(event_key){
+    return this.http.get(this.API_URL + '/events/'+ event_key+'/rank_predictions');
+  }
 
   getEvents() {
     return this.http.get(this.API_URL + '/events');

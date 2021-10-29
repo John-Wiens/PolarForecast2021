@@ -6,6 +6,7 @@ import { IconsComponent } from '../../icons/icons.component';
 import { RankingsComponent } from '../../rankings/rankings.component';
 import { MatchesComponent } from '../../matches/matches.component';
 import { TeamsComponent } from 'app/teams/teams.component';
+import { PredictionsComponent } from '../../predictions/predictions.component';
 
 export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard',      component: DashboardComponent },
@@ -14,4 +15,5 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'rankings',        component: RankingsComponent },
     { path: 'matches',        component: MatchesComponent },
     { path: 'teams',        component: TeamsComponent },
+    { path: 'predictions',        component: PredictionsComponent },
 ];

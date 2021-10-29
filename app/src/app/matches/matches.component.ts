@@ -6,13 +6,6 @@ import { MatSortModule, MatSort } from '@angular/material/sort';
 import { ApiService } from '../services/api.service';
 
 
-export interface PeriodicElement {
-  name: string;
-  position: number;
-  weight: number;
-  symbol: string;
-}
-
 @Component({
   selector: 'app-matches',
   templateUrl: './matches.component.html',
@@ -21,11 +14,6 @@ export interface PeriodicElement {
 export class MatchesComponent implements OnInit {
 
   displayedColumns: string[] = ['match_number','blue_score', 'blue_rp', 'red_score', 'red_rp','results'];
-  //columnHeaders = ['Rank', 'Team', 'OPR', 'Auto','Control','Endgame','Cells','BPM','Fouls','Power'].slice();
- // columnsToDisplay: string[] = this.displayedColumns.slice();
-  //displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
-
-  //displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = null;
   finalsDataSource = null;
 
