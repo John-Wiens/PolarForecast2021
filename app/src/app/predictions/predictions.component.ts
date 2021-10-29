@@ -52,7 +52,7 @@ export class PredictionsComponent implements OnInit {
         if ('rankings' in data){
           this.data = data['rankings'];
           this.data.sort(function(first, second) {
-            return second.rank - first.rank;
+            return first.rank - second.rank;
            });
           this.dataSource = new MatTableDataSource(this.data);
           

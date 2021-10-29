@@ -22,6 +22,11 @@
                         <td mat-cell *matCellDef="let element"> {{element.opr | number:'1.2-2'}} </td>
                       </ng-container>
 
+                      <ng-container matColumnDef="vopr">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header> VOPR </th>
+                        <td mat-cell *matCellDef="let element"> {{element.vopr | number:'1.2-2'}} </td>
+                      </ng-container>
+
                       <ng-container matColumnDef="auto">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header> Auto </th>
                         <td mat-cell *matCellDef="let element"> {{element.auto | number:'1.2-2'}} </td>

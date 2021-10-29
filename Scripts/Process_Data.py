@@ -59,7 +59,7 @@ def safe_div(a, b):
         return 0
     
     
-def build_score_matrix(event_key, teams, matches):
+def build_score_matrix(teams, matches):
     num_teams = len(teams)
     metrics = ["auto_score", "control_score", "endgame_score", "cell_score", "inner_goals", "high_goals", "low_goals", "extra_rp","fouls"]
     num_matches = len(matches)
@@ -69,7 +69,6 @@ def build_score_matrix(event_key, teams, matches):
 
     i = 0
 
-    print(teams)
     for match in matches:
         if match["results"] == "Actual":
             metric_count = 0
@@ -79,7 +78,6 @@ def build_score_matrix(event_key, teams, matches):
                 metric_count +=1
             
             for j in range(0,3):
-                print(float(match["blue"+str(j)]))
                 blue_index = np.searchsorted(teams, float(match["blue"+str(j)]))
                 red_index = np.searchsorted(teams, float(match["red"+str(j)]))
                 team_array[i][blue_index] = 1
@@ -88,6 +86,23 @@ def build_score_matrix(event_key, teams, matches):
             i+=1
 
     return team_array, score_array
+
+def build_weight_matrix(matches, teams):
+    num_teams = len(teams)
+    num_matches = len(matches)
+    weights = np.zeros([num_matches*2,num_matches*2])
+    match_count = int(len(matches) * 6 / num_teams)
+    alpha = 0.3
+    i = 0
+    for match in matches:
+        if match["results"] == "Actual":
+            reweight = math.sqrt((1-alpha)**(match_count - int(i / (num_teams / 6.0))))
+            weights[i][i] = reweight
+            weights[i+num_matches][i+num_matches] = reweight
+        else:
+            weights[i][i] = 0
+        i+=1
+    return weights
     
 def get_climb_results(teams, matches):
     #Endgame array columns: Average Points, Number of Climbs, Percent of Climbs, Climb Variance

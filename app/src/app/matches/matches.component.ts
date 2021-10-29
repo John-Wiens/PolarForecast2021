@@ -11,6 +11,7 @@ import { ApiService } from '../services/api.service';
   templateUrl: './matches.component.html',
   styleUrls: ['./matches.component.css']
 })
+
 export class MatchesComponent implements OnInit {
 
   displayedColumns: string[] = ['match_number','blue_score', 'blue_rp', 'red_score', 'red_rp','results'];

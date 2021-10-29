@@ -10,10 +10,12 @@ from Types.Ranking import Rank, Rankings
 
 import TBA
 import DB_Access as db
-from Process_Data import build_score_matrix, solve_matrix, get_climb_results, get_prob
+from Process_Data import build_score_matrix, build_weight_matrix, solve_matrix, get_climb_results, get_prob
 from datetime import datetime
 
 import sys
+
+volatile_predictions = False
 
 
 def get_as_date(date)   :
@@ -29,8 +31,8 @@ def update_events(force_update = False):
             start = get_as_date(event['start_date'])
             end = get_as_date(event['end_date'])
             
-            #if event['event_code'] == 'catt':
-            if today >= start and today <= end or force_update or event['event_code'] == 'cc':  #isjo
+            if event['event_code'] == 'isjo':
+            #if today >= start and today <= end or force_update or event['event_code'] == 'cc':  #isjo
                 event_list.append(event['key'])
             
             db.update_one('events', event)
@@ -83,7 +85,7 @@ def update_teams(event_code, force_update = False):
 def update_calculations(event_code, matches, teams, force_update = False):
     rankings, is_updated = TBA.get("/event/"+event_code+"/rankings")
     team_list = [float(team['key']) for team in teams]
-    team_array, score_array = build_score_matrix(event_code, team_list, matches)
+    team_array, score_array = build_score_matrix(team_list, matches)
     endgame_array = get_climb_results(team_list, matches)
     if np.count_nonzero(score_array)==0:
         db.log_msg(f"Data Array is Empty for {event_code}. Exiting")
@@ -96,6 +98,17 @@ def update_calculations(event_code, matches, teams, force_update = False):
     estimator_error = np.square(score_array - estimator_scores) # Compute Squared Errors
     team_variances = solve_matrix(team_array, estimator_error) # Compute Each Teams contribution to squared error
     
+    try:
+        weight_matrix = build_weight_matrix(matches, teams)
+        volatile_team_powers = solve_matrix(weight_matrix @ team_array, weight_matrix @ score_array)
+        vopr_matrix = volatile_team_powers[:,0] + volatile_team_powers[:,1] + volatile_team_powers[:,0] + volatile_team_powers[:,3]
+        
+        if volatile_predictions:
+            team_powers = volatile_team_powers
+
+    except Exception as e:
+        print(e)
+        vopr_matrix = None
     
 
     #team_powers = np.matmul(np.linalg.pinv(team_array),score_array)
@@ -111,12 +124,17 @@ def update_calculations(event_code, matches, teams, force_update = False):
     max_opr = np.max(opr_matrix)
     for team in teams:
         opr = opr_matrix[index]
+        if vopr_matrix is not None:
+            vopr = vopr_matrix[index]
+        else:
+            vopr = opr
         pr = 100 * (opr/max_opr)
         bpm = team_powers[index][4] + team_powers[index][5] + team_powers[index][6]
 
         try:
             team['power']= pr
             team['opr']= opr
+            team['vopr'] = vopr
             team['climb_percent'] = endgame_array[index][2]
             team['score_variance'] = variance_matrix[index]
             team['climb_variance'] = endgame_array[index][3]
@@ -145,11 +163,15 @@ def update_calculations(event_code, matches, teams, force_update = False):
             team = float((ranking["team_key"])[3:])
             index = np.searchsorted(teams, team)
             opr = opr_matrix[index]
+            if vopr_matrix is not None:
+                vopr = vopr_matrix[index]
+            else:
+                vopr = opr
             
             pr = 100 * (opr/max_opr)
             bpm = team_powers[index][4] + team_powers[index][5] + team_powers[index][6]
             rank = float(ranking["rank"])
-            row = {"team": team, "rank": rank, "opr": opr, "auto":team_powers[index][0], "control":team_powers[index][1], "endgame":endgame_array[index][0], "cells": team_powers[index][3], "bpm":bpm, "fouls":team_powers[index][8], "power":pr}
+            row = {"team": team, "rank": rank, "opr": opr, "vopr":vopr, "auto":team_powers[index][0], "control":team_powers[index][1], "endgame":endgame_array[index][0], "cells": team_powers[index][3], "bpm":bpm, "fouls":team_powers[index][8], "power":pr}
             table.append(Rank(**row))
         rankings = Rankings(**{'key': event_code, 'rankings':table})
         db.update_one('rankings', rankings.dict())                          
@@ -310,8 +332,6 @@ def update_match_predictions(event, matches, teams):
             match["predicted_red_score"] = clean_num(match["red_score"])
              
             match['results'] = match['win_prob']
-            #print(match["blue_score"])
-            #print(match['key'], match['blue_score'], match['red_score'], match['win_prob'])
             db.update_one('matches', match)
 
 def simulate_matches(matches, teams, rps):
@@ -347,9 +367,6 @@ def simulate_matches(matches, teams, rps):
                     sim_rps[match['red'+str(i)]] += 1
                 if red_cell:
                     sim_rps[match['red'+str(i)]] += 1
-            #print(match)
-            #print(sim_rps)
-            #input('Press enter to continue')
         ranks = {k: v for k, v in sorted(sim_rps.items(), key=lambda item: item[1], reverse = True)}
         rank = 1
         for key in ranks.keys():
@@ -381,33 +398,34 @@ def update_rank_predictions(event, matches):
         return
 
     for match in matches:
-        if match['results'] == 'Actual':
-            for i in range(0,3):
-                blue_team = match['blue'+str(i)]
+        if match['comp_level'] == 'qm':
+            if match['results'] == 'Actual':
+                for i in range(0,3):
+                    blue_team = match['blue'+str(i)]
 
-                if blue_team in teams:
-                    rps[blue_team] += match['blue_rp']
-                else:
-                    teams[blue_team] = db.find_one('teams', blue_team)
-                    rps[blue_team] = {match['blue_rp']}
+                    if blue_team in teams:
+                        rps[blue_team] += match['blue_rp']
+                    else:
+                        teams[blue_team] = db.find_one('teams', blue_team)
+                        rps[blue_team] = match['blue_rp']
 
-                red_team = match['red'+str(i)]
-                if red_team in teams:
-                    rps[red_team] += match['blue_rp']
-                else:
-                    teams[red_team] = db.find_one('teams', red_team)
-                    rps[red_team] = {match['red_rp']}
-        else:
-            for i in range(0,3):
-                blue_team = match['blue'+str(i)]
-                red_team = match['red'+str(i)]
-                if blue_team not in teams:
-                    teams[blue_team] = 0
-                    rps[blue_team] = 0
-                if red_team not in teams:
-                    teams[red_team] = 0
-                    rps[red_team] = 0
-            predict_matches.append(match)
+                    red_team = match['red'+str(i)]
+                    if red_team in teams:
+                        rps[red_team] += match['red_rp']
+                    else:
+                        teams[red_team] = db.find_one('teams', red_team)
+                        rps[red_team] = match['red_rp']
+            else:
+                for i in range(0,3):
+                    blue_team = match['blue'+str(i)]
+                    red_team = match['red'+str(i)]
+                    if blue_team not in teams:
+                        teams[blue_team] = 0
+                        rps[blue_team] = 0
+                    if red_team not in teams:
+                        teams[red_team] = 0
+                        rps[red_team] = 0
+                predict_matches.append(match)
     
     ranks = simulate_matches(predict_matches, teams, rps)
     db.update_one('rankings_predicted', {'key': event, 'rankings': ranks})
@@ -421,7 +439,7 @@ def update_data():
         for event in events:
             matches = update_matches(event)
             teams = update_teams(event)
-            #print(teams)
+
             update_calculations(event, matches, teams)
             update_match_predictions(event, matches, teams)
             update_rank_predictions(event,matches)

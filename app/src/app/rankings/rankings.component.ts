@@ -12,8 +12,8 @@ import { ApiService } from '../services/api.service';
 })
 export class RankingsComponent implements OnInit {
 
-  displayedColumns: string[] = ['rank', 'team', 'opr', 'auto','control','endgame','cells','bpm','fouls','power'];
-  columnHeaders = ['Rank', 'Team', 'OPR', 'Auto','Control','Endgame','Cells','BPM','Fouls','Power'].slice();
+  displayedColumns: string[] = ['rank', 'team', 'opr', 'vopr', 'auto','control','endgame','cells','bpm','fouls','power'];
+  columnHeaders = ['Rank', 'Team', 'OPR', 'VOPR', 'Auto','Control','Endgame','Cells','BPM','Fouls','Power'].slice();
   columnsToDisplay: string[] = this.displayedColumns.slice();
   //displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
 

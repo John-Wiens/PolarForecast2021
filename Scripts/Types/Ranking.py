@@ -8,6 +8,7 @@ class Rank(BaseModel):
     team: int
     rank: int
     opr: float
+    vopr: float
     auto: float
     control: float
     endgame: float
