@@ -1,0 +1,18 @@
+table {
+    width: 100%;
+    min-width: 128px;
+    overflow-x: scroll;
+  }
+th {
+  min-width: 96px;
+}
+td {
+  min-width: 96px;
+}
+.text-blue{
+  color: #2196f3
+}
+
+.text-red{
+  color: #f44336
+}
