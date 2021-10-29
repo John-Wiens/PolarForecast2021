@@ -27,27 +27,27 @@
               matSortDirection="asc">
 
               <ng-container matColumnDef="rank">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Match </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Rank </th>
                 <td mat-cell *matCellDef="let element"> {{element.rank | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="key">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue Score </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Team </th>
                 <td mat-cell *matCellDef="let element"> {{element.key}} </td>
               </ng-container>
 
               <ng-container matColumnDef="max">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Blue RP </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Max Sim Rank </th>
                 <td mat-cell *matCellDef="let element"> {{element.max | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="min">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Red Score </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Min Sim Rank </th>
                 <td mat-cell *matCellDef="let element"> {{element.min | number:'1.0-0'}} </td>
               </ng-container>
 
               <ng-container matColumnDef="average">
-                <th mat-header-cell *matHeaderCellDef mat-sort-header> Red RP </th>
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Average Sim Rank </th>
                 <td mat-cell *matCellDef="let element"> {{element.average | number:'1.0-0'}} </td>
               </ng-container>
 
